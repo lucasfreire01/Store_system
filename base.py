@@ -289,22 +289,6 @@ class Database_inventory:
                      created_at, last_login) VALUES (?,?,?,?,?,?,?)""", args=(username, password_hash, email, has_role_int, create_role,
                                                       create_at, last_login))
 
-    def update_user(self, id:str, username = None, password_hash = None, email = None, has_role = None):
-        if username is not None:
-            self.execute("""UPDATE Users SET username = ? WHERE  id = ?""", args=(username, id))
-        
-        if password_hash is not None:
-            self.execute("""UPDATE Users SET password_hash = ? WHERE  id = ?""", args=(username, id))
-        
-        if email is not None:
-            self.execute("""UPDATE Users SET email = ? WHERE  id = ?""", args=(username, id))
-        
-        if has_role is not None:
-            self.execute("""UPDATE Users SET has_role = ? WHERE  id = ?""", args=(username, id))
-    
-    def remove_user(self, id:str):
-        self.execute("""DELETE FROM Users WHERE id = ?""", args=(id,))
-
     def update_user(self, id:str, username=None, email=None, password=None):
         if username is not None:
             self.execute("""UPDATE Users SET username=? WHERE id=?""", args=(username, id),)
