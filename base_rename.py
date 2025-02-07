@@ -326,4 +326,7 @@ class Database_inventory:
             self.execute("""UPDATE item SET sku = ? WHERE id= ?""", args=(sku, id))
         if price is not None:
             self.execute("""UPDATE item SET price = ? WHERE id= ?""", args=(price, id))
+
+    def remove_item(self, id=str):
+        self.execute("""DELETE FROM item WHERE id = ?""", args=(id,))
         
