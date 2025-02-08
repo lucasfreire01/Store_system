@@ -330,3 +330,19 @@ class Database_inventory:
     def remove_item(self, id=str):
         self.execute("""DELETE FROM item WHERE id = ?""", args=(id,))
         
+    def add_supplier(self, id=None, name=str, email=str, phone=int, adress=str):
+        id_item = id if id else self.gen_id()
+        self.execute("""INSERT INTO suppliers(name, email, phone, adress, id) VALUES(?,?,?,?,?)""", args=(name, email, phone,adress, id))
+    def update_supplier(self, id=int, name=None, email=None, phone=None, adress=None):
+        if name is not None:
+            self.execute("""UPDATE suppliers SET name = ? WHERE id= ?""", args=(name, id))
+        if email is not None:
+            self.execute("""UPDATE suppliers SET email = ? WHERE id= ?""", args=(email, id))
+        if phone is not None:
+            self.execute("""UPDATE suppliers SET phone = ? WHERE id= ?""", args=(phone, id))
+        if adress is not None:
+            self.execute("""UPDATE suppliers SET adress = ? WHERE id= ?""", args=(adress, id))
+
+    def remove_supplier(self, id=str):
+        self.execute("""DELETE FROM suppliers WHERE id = ?""", args=(id,))
+        
