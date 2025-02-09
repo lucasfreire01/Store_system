@@ -309,14 +309,13 @@ class Database_inventory:
     def add_role(self,id:str=None,name=None, description=None):
         self.execute("""INSERT INTO Roles (name, description) VALUES(?,?)""", args=(name, description))
 
-    def add_item(self, id=None, name=str, description=str, category_id=None, sku=int, price=float, supplier_id=None, created_at=None, updated_at=None):
+    def add_item(self, id=None, name=str, description=str, category_id=str, sku=int, price=float, supplier_id=None, created_at=None, updated_at=None):
         created_at_item = self.time_for_timestemp()
         updated_at_item = self.time_for_timestemp()
         id_item = id if id else self.gen_id()
-        category_id_item = category_id if category_id else self.gen_id()
         supplier_id_item = supplier_id if supplier_id else self.gen_id()
         self.execute("""INSERT INTO item(name, description, sku, price, id, category_id, supplier_id, create_at, updated_at) VALUES(?,?,?,?,?,?,?,?,?)""", args=(name, description, sku,price,
-                                                                                                                                      id, category_id_item, supplier_id_item, created_at_item, updated_at_item))
+                                                                                                                                      id, category_id, supplier_id_item, created_at_item, updated_at_item))
     def update_item(self, name=str, description=None, sku=None, price=None, id=None):
         if name is not None:
             self.execute("""UPDATE item SET name = ? WHERE id= ?""", args=(name, id))
@@ -346,3 +345,6 @@ class Database_inventory:
     def remove_supplier(self, id=str):
         self.execute("""DELETE FROM suppliers WHERE id = ?""", args=(id,))
         
+    def add_inventory(self, id=None, id_item=None, quantaty=None, location=None, reorder_laves=int, last_updated=None):
+        last_updated = self.time_for_timestemp()
+        id_item = self.execute("""SELECT * FROM item WHERE id = ?""", args=(id))
