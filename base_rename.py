@@ -105,6 +105,7 @@ class Database_inventory:
             self.execute(
             """CREATE TABLE IF NOT EXISTS Users(
                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       user_id TEXT NOT NULL,
                        username TEXT NOT NULL,
                        email VARCHAR(255) NOT NULL,
                        has_role INTEGER NOT NULL,
@@ -269,7 +270,7 @@ class Database_inventory:
         printable = string.printable
         return "".join([printable[rd.choice(range(0, len(printable)))] for _ in range(n)])
     def add_user(self, username:str, password_hash:str, email:str, has_role:bool, 
-                 id=None, role_id=None, adm_login=bool):
+                 id=None, role_id=None, user_id=None,adm_login=bool):
         if adm_login == True:
             def verication():
                 password = input('Pleace writing the password: ')
@@ -283,11 +284,12 @@ class Database_inventory:
                 return
             password_hash = adm
         create_role = role_id if role_id else self.gen_id()
+        create_user = user_id if user_id else self.gen_id()
         create_at = self.time_for_timestemp()
         last_login = self.time_for_timestemp()
         has_role_int = 1 if has_role else 0 
-        self.execute("""INSERT INTO Users (username, password_hash, email, has_role, role_id,
-                     created_at, last_login) VALUES (?,?,?,?,?,?,?)""", args=(username, password_hash, email, has_role_int, create_role,
+        self.execute("""INSERT INTO Users (username, password_hash, email, has_role, role_id, user_id,
+                     created_at, last_login) VALUES (?,?,?,?,?,?,?,?)""", args=(username, password_hash, email, create_user, has_role_int, create_role,
                                                       create_at, last_login))
 
     def update_user(self, id:str, username = None, password_hash = None, email = None, has_role = None):
@@ -309,7 +311,10 @@ class Database_inventory:
     def add_role(self,id:str=None,name=None, description=None):
         self.execute("""INSERT INTO Roles (name, description) VALUES(?,?)""", args=(name, description))
 
-    def add_item(self, id=None, name=str, description=str, category_id=str, sku=int, price=float, supplier_id=None, created_at=None, updated_at=None):
+    def add_item(self, id=None, name=str, description=str, category_id=str, sku=int, price=float, supplier_id=None, created_at=None, updated_at=None, supplier_keep=False, supplier_share=None):
+        if supplier_keep == True:
+            supplier = self.execute("""SELECT id FROM suppliers WHERE id = ?""", args=(supplier_share,))
+            supplier_id = supplier
         created_at_item = self.time_for_timestemp()
         updated_at_item = self.time_for_timestemp()
         id_item = id if id else self.gen_id()
@@ -344,7 +349,28 @@ class Database_inventory:
 
     def remove_supplier(self, id=str):
         self.execute("""DELETE FROM suppliers WHERE id = ?""", args=(id,))
+    
+    def add_order(self, id=None, user_id = None, order_date=None, status=str, total_amount=int, shipping_adress=str, billing_adress=str, created_at=None, updated_at=None):
+        create_role = role_id if role_id else self.gen_id()
+        create_at = self.time_for_timestemp()
+        last_login = self.time_for_timestemp()
+        has_role_int = 1 if has_role else 0 
+        self.execute("""INSERT INTO Users (username, password_hash, email, has_role, role_id,
+                     created_at, last_login) VALUES (?,?,?,?,?,?,?)""", args=(username, password_hash, email, has_role_int, create_role,
+                                                      create_at, last_login))
+
+    def update_user(self, id:str, username = None, password_hash = None, email = None, has_role = None):
+        if username is not None:
+            self.execute("""UPDATE Users SET username = ? WHERE  id = ?""", args=(username, id))
         
-    def add_inventory(self, id=None, id_item=None, quantaty=None, location=None, reorder_laves=int, last_updated=None):
-        last_updated = self.time_for_timestemp()
-        id_item = self.execute("""SELECT * FROM item WHERE id = ?""", args=(id))
+        if password_hash is not None:
+            self.execute("""UPDATE Users SET password_hash = ? WHERE  id = ?""", args=(password_hash, id))
+        
+        if email is not None:
+            self.execute("""UPDATE Users SET email = ? WHERE  id = ?""", args=(email, id))
+        
+        if has_role is not None:
+            self.execute("""UPDATE Users SET has_role = ? WHERE  id = ?""", args=(has_role, id))
+    
+    def remove_user(self, id:str):
+        self.execute("""DELETE FROM Users WHERE id = ?""", args=(id,))
