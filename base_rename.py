@@ -351,13 +351,13 @@ class Database_inventory:
         self.execute("""DELETE FROM suppliers WHERE id = ?""", args=(id,))
     
     def add_order(self, id=None, user_id = None, order_date=None, status=str, total_amount=int, shipping_adress=str, billing_adress=str, created_at=None, updated_at=None):
-        create_role = role_id if role_id else self.gen_id()
-        create_at = self.time_for_timestemp()
-        last_login = self.time_for_timestemp()
-        has_role_int = 1 if has_role else 0 
-        self.execute("""INSERT INTO Users (username, password_hash, email, has_role, role_id,
-                     created_at, last_login) VALUES (?,?,?,?,?,?,?)""", args=(username, password_hash, email, has_role_int, create_role,
-                                                      create_at, last_login))
+        user_id = user_id if user_id else self.gen_id()
+        order_date = self.time_for_timestemp()
+        created_at = self.time_for_timestemp()
+        updated_at = self.time_for_timestemp()
+        self.execute("""INSERT INTO Users (user_id, order_date, status, total_amount, shipping_adress, billing_adress,email,
+                     created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)""", args=(user_id, status, total_amount, shipping_adress, billing_adress,
+                                                      created_at, updated_at))
 
     def update_user(self, id:str, username = None, password_hash = None, email = None, has_role = None):
         if username is not None:
