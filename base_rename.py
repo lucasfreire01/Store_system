@@ -350,14 +350,14 @@ class Database_inventory:
     def remove_supplier(self, id=str):
         self.execute("""DELETE FROM suppliers WHERE id = ?""", args=(id,))
     
-    def add_order(self, id=None, user_id = None, order_date=None, status=str, total_amount=int, shipping_adress=str, billing_adress=str, created_at=None, updated_at=None):
+    def add_order(self, id=None, user_id = None, order_date=None, status=str, total_amount=int, shipping_address=str, billing_address=str, create_at=None, update_at=None):
         user_id = user_id if user_id else self.gen_id()
         order_date = self.time_for_timestemp()
         created_at = self.time_for_timestemp()
         updated_at = self.time_for_timestemp()
-        self.execute("""INSERT INTO Users (user_id, order_date, status, total_amount, shipping_adress, billing_adress,email,
-                     created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)""", args=(user_id, status, total_amount, shipping_adress, billing_adress,
-                                                      created_at, updated_at))
+        self.execute("""INSERT INTO orders (user_id, order_date, status, total_amount, shipping_address, billing_address,
+                     create_at, update_at) VALUES (?,?,?,?,?,?,?,?)""", args=(user_id, order_date, status, total_amount, shipping_address, billing_address,
+                                                      create_at, update_at))
 
     def update_user(self, id:str, username = None, password_hash = None, email = None, has_role = None):
         if username is not None:
