@@ -14,4 +14,6 @@ if __name__ == "__main__":
     db.add_supplier(name='Freire', email='freirelucas011@gmail.com', phone=38999492824, adress='vasco da gama street')
     db.update_supplier(name="Lucas Gabriel", id=1)
     #db.remove_supplier(id='3')
-    db.add_order(user_id='jaql5', status="Done", total_amount=1, shipping_address='Vasco Da Gama st', billing_address='Vasco Da Gama St')
+    #db.add_order(user_id='jaql5', status="Done", total_amount=1, shipping_address='Vasco Da Gama st', billing_address='Vasco Da Gama St')
+    #db.update_order(id=3, status='Processing')
+    db.remove_order(id=3)

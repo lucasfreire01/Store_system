@@ -353,24 +353,27 @@ class Database_inventory:
     def add_order(self, id=None, user_id = None, order_date=None, status=str, total_amount=int, shipping_address=str, billing_address=str, create_at=None, update_at=None):
         user_id = user_id if user_id else self.gen_id()
         order_date = self.time_for_timestemp()
-        created_at = self.time_for_timestemp()
-        updated_at = self.time_for_timestemp()
+        create_at = self.time_for_timestemp()
+        update_at = self.time_for_timestemp()
         self.execute("""INSERT INTO orders (user_id, order_date, status, total_amount, shipping_address, billing_address,
                      create_at, update_at) VALUES (?,?,?,?,?,?,?,?)""", args=(user_id, order_date, status, total_amount, shipping_address, billing_address,
                                                       create_at, update_at))
 
-    def update_user(self, id:str, username = None, password_hash = None, email = None, has_role = None):
-        if username is not None:
-            self.execute("""UPDATE Users SET username = ? WHERE  id = ?""", args=(username, id))
+    def update_order(self, id:str, user_id = None, status = None, total_amount = None, shipping_address = None, billing_address=None):
+        if user_id is not None:
+            self.execute("""UPDATE orders SET user_id = ? WHERE  id = ?""", args=(user_id, id))
         
-        if password_hash is not None:
-            self.execute("""UPDATE Users SET password_hash = ? WHERE  id = ?""", args=(password_hash, id))
+        if status is not None:
+            self.execute("""UPDATE orders SET status = ? WHERE  id = ?""", args=(status, id))
         
-        if email is not None:
-            self.execute("""UPDATE Users SET email = ? WHERE  id = ?""", args=(email, id))
+        if total_amount is not None:
+            self.execute("""UPDATE orders SET total_amount = ? WHERE  id = ?""", args=(total_amount, id))
         
-        if has_role is not None:
-            self.execute("""UPDATE Users SET has_role = ? WHERE  id = ?""", args=(has_role, id))
+        if shipping_address is not None:
+            self.execute("""UPDATE orders SET shipping_address = ? WHERE  id = ?""", args=(shipping_address, id))
+        
+        if billing_address is not None:
+            self.execute("""UPDATE orders SET billing_address = ? WHERE id = ?""", args=(billing_address, id))
     
-    def remove_user(self, id:str):
-        self.execute("""DELETE FROM Users WHERE id = ?""", args=(id,))
+    def remove_order(self, id:str):
+        self.execute("""DELETE FROM orders WHERE id = ?""", args=(id,))
