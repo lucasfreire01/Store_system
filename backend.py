@@ -8,4 +8,4 @@ import string
 
 con = sqlite3.connect("database.db")
 class backend:
-    
+    def __init__(self, name=None, )
