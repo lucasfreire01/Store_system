@@ -1,4 +1,4 @@
-from src.base_rename import Database_inventory
+from src.base import Database_inventory
 if __name__ == "__main__":
     db = Database_inventory()
     db.create_base_inventory('inventory')

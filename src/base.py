@@ -4,7 +4,9 @@ import random as rd
 import string
 HARD_CODED_DB = "./database.db"
 from datetime import datetime
-class Database_inventory:
+
+
+class DatabaseInventory:
     def __init__(self, DB=None):
         self.db = HARD_CODED_DB if DB is None else DB
 
@@ -20,6 +22,15 @@ class Database_inventory:
         cursor.close()
         connect.close()
     #create a execute to open make the method and close to imporve the memory use 
+
+    @staticmethod
+    def time_for_timestemp():
+        return datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+    @staticmethod
+    def gen_id(n=5):
+        printable = string.printable
+        return "".join([printable[rd.choice(range(0, len(printable)))] for _ in range(n)])
+
     def execute(self, query, params=True,returnable=False, args=()):
 
         # open connect
@@ -162,134 +173,18 @@ class Database_inventory:
             params=False
             )
         
-    def create_view(self, view=None):
-        if view == 'inventory_view':
-            self.execute(
-            """CREATE VIEW IF NOT EXISTS inventory_view AS 
-            SELECT
-            categories.id AS category_id,
-            categories.name AS category_name,
-            categories.description AS category_description,
-            
-            item.id AS item_id,
-            item.name AS item_name,
-            item.description AS item_description,
-            item.category_id AS item_category_id,
-            item.sku AS item_sku,
-            item.price AS item_price,
-            item.supplier_id AS item_supplier_id,
-            item.create_at AS item_create_at,
-            item.updated_at AS item_updated_at,
-            
-            inventory.id AS inventory_id,
-            inventory.item_id AS inventory_item_id,
-            inventory.quantity AS inventory_quantity,
-            inventory.location AS inventory_location,
-            inventory.reorder_level AS inventory_reorder_level,
-            inventory.last_updated AS inventory_last_updated,
-            
-            suppliers.id AS supplier_id,
-            suppliers.name AS supplier_name,
-            suppliers.email AS supplier_email,
-            suppliers.phone AS supplier_phone,
-            suppliers.address AS supplier_address
-            
-            FROM 
-            categories
-            LEFT JOIN 
-            item ON categories.id = item.category_id
-            LEFT JOIN 
-            inventory ON item.id = inventory.item_id
-            LEFT JOIN 
-            suppliers ON item.supplier_id = suppliers.id
-            """,
-            params=False
-            )
-        
-        if view == 'Users_view':
-            self.execute(
-                """CREATE VIEW IF NOT EXISTS users_role AS 
-                    SELECT
-                    Users.id AS user_id,
-                    Users.username AS username,
-                    Users.email AS email,
-                    Users.has_role AS has_role,
-                    Users.password_hash AS password_hash,
-                    Users.role_id AS role_id,
-                    Users.created_at AS created_at,
-                    Users.last_login AS last_login,
-                    Roles.id AS roles_id,
-                    Roles.name AS role_name,
-                    Roles.description AS role_description
-                    FROM 
-                    Users
-                    LEFT JOIN 
-                    Roles ON Users.has_role = Roles.id
-                """,
-                params=False
-                )
-        
-        if view == 'orders_view':
-            self.execute(
-                        """CREATE VIEW IF NOT EXISTS orders_view AS 
-                            SELECT
-                            orders.id AS orders_id,
-                            orders.user_id AS orders_user_id,
-                            orders.order_date AS order_date,
-                            orders.status AS order_status,
-                            orders.total_amount AS order_total_amount,
-                            orders.shipping_address AS shipping_address,
-                            orders.billing_address AS billing_address,
-                            orders.create_at AS order_create_at,
-                            orders.update_at AS order_update_at,
-                
-                            order_items.id AS order_items_id,
-                            order_items.order_date AS order_items_date,
-                            order_items.item_id AS order_item_id,
-                            order_items.quantity AS order_quantity,
-                            order_items.price_at_purchase AS order_price,
-                
-                            order_statuses.id AS statuses_id,
-                            order_statuses.status AS statuses_status
-                            
-                            FROM 
-                            orders
-                            LEFT JOIN 
-                            order_items ON orders.id = order_items.id
-                            LEFT JOIN 
-                            order_statuses ON orders.status = order_statuses.status
-                            """,
-                            params=False
-                            )
-        
-    @staticmethod
-    def time_for_timestemp():
-        return datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-    @staticmethod
-    def gen_id(n=5):
-        printable = string.printable
-        return "".join([printable[rd.choice(range(0, len(printable)))] for _ in range(n)])
-    def add_user(self, username:str, password_hash:str, email:str, has_role:bool, 
-                 id=None, role_id=None, user_id=None,adm_login=bool):
-        if adm_login == True:
-            def verication():
-                password = input('Pleace writing the password: ')
-                if password == '12345':
-                    return password
-                if password != '12345':
-                    return print("passord incorrect")
-            adm = verication()
-            if adm_login is None:
-                print('passord is none')
-                return
-            password_hash = adm
-        create_role = role_id if role_id else self.gen_id()
-        create_user = user_id if user_id else self.gen_id()
+    def add_user(self, username:str, password_hash:str, email:str, has_role:bool, role_id=2):
+
+        assert not isinstance(role_id, None) and role_id in range(1, 3), "please provide an integer"
+
+        # colocar as outras asserções
+       
+        create_user = self.gen_id()
         create_at = self.time_for_timestemp()
         last_login = self.time_for_timestemp()
-        has_role_int = 1 if has_role else 0 
         self.execute("""INSERT INTO Users (username, password_hash, email, has_role, role_id, user_id,
-                     created_at, last_login) VALUES (?,?,?,?,?,?,?,?)""", args=(username, password_hash, email, create_user, has_role_int, create_role,
+                     created_at, last_login) VALUES (?,?,?,?,?,?,?,?)""", args=
+                     (username, password_hash, email, create_user, has_role, role_id,
                                                       create_at, last_login))
 
     def update_user(self, id:str, username = None, password_hash = None, email = None, has_role = None):
