@@ -175,7 +175,7 @@ class DatabaseInventory:
         
     def add_user(self, username:str, password_hash:str, email:str, has_role:bool, role_id=2):
 
-        assert not isinstance(role_id, None) and role_id in range(1, 3), "please provide an integer"
+        assert role_id is not None and isinstance(role_id, int) and role_id in range(1, 3), "please provide an integer"
 
         # colocar as outras asserções
        

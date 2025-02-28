@@ -1,11 +1,11 @@
 from .user import User
 import sqlite3
 from .base import DatabaseInventory
-class Customer(User):
+class Customer:
 
-    def __init__(self, address: str, args*):
+    def __init__(self, address: str, *args):
 
-        super().__init__(args*)
+        super().__init__(*args)
 
         address = self.address
         order_history = self.load()
