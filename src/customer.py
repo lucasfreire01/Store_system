@@ -1,20 +1,20 @@
-from .user import User
 import sqlite3
-from .base import DatabaseInventory
+from base import DatabaseInventory
 class Customer:
 
     def __init__(self, address: str, *args):
 
         super().__init__(*args)
 
-        address = self.address
+        self.address = address
         order_history = self.load()
 
 
-    def load(Self):
+    def load(Self,user_id=str):
         connect = sqlite3.connect('database.db')
-        user_table = DatabaseInventory.execute("""SELECT * FROM User""")
-        orders_table = DatabaseInventory.execute("""SELECT * FROM orders""")
+        user_table = DatabaseInventory.execute("""SELECT * FROM User WHERE user_id = ?""", args=(user_id))
+        orders_table = DatabaseInventory.execute("""SELECT * FROM orders WHERE user_id = ?""", args=(user_id))
+        address_table = DatabaseInventory.execute("""SELECT shipping_address FROM orders WHERE user_id = ?""", args=(user_id))
 
     def verification(self, name=str, password_hash=str):
         query = DatabaseInventory.execute("""SELECT * FROM User(name, password_hash) VALUES(?,?)""", args=(name, password_hash))
