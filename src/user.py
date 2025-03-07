@@ -1,4 +1,4 @@
-from .store import Order
+from .base import DatabaseInventory
  
 
 class User:

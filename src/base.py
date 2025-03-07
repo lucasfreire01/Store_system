@@ -31,33 +31,28 @@ class DatabaseInventory:
         printable = string.printable
         return "".join([printable[rd.choice(range(0, len(printable)))] for _ in range(n)])
 
-    def execute(self, query, params=True,returnable=False, args=()):
+    def execute(self, query, args=(), returnable=False):
+        if not isinstance(args, tuple):
+            args = (args,) 
 
-        # open connect
         connect, cursor = self.fetch_database(self.db)
 
-        # execute the query
 
-        if params:
-            cursor.execute(query, args)
+        cursor.execute(query, args)
 
-        else:
-            cursor.execute(query)
 
-        # commit
         connect.commit()
 
-        # if have value
-      
 
         if returnable:
             temp = cursor.fetchall()
-            print(temp)
+            print(temp) 
             self.close_connection(*(connect, cursor))
             return temp
 
+
         self.close_connection(*(connect, cursor))
-        # close connection
+
     
     def create_base_inventory(self, table:str = None):
         if table is None:
@@ -70,7 +65,6 @@ class DatabaseInventory:
                        name VARCHAR(100) NOT NULL,
                        description VARCHAR(255))
                        """,
-            params=False,
             )
             self.execute(
             """CREATE TABLE IF NOT EXISTS item(
@@ -86,7 +80,6 @@ class DatabaseInventory:
                 FOREIGN KEY (category_id) REFERENCES category(id),
                 FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
                 )""",
-                params=False,
             )
             self.execute(
                 """CREATE TABLE IF NOT EXISTS inventory(
@@ -98,17 +91,16 @@ class DatabaseInventory:
                     last_updated TIMESTAMP,
                     FOREIGN KEY (item_id) REFERENCES item(id))
                     """,
-                params=False,
                 )
             self.execute(
                 """CREATE TABLE IF NOT EXISTS suppliers(
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id_supplier TEXT NOT NULL,
                     name VARCHAR(100) NOT NULL,
                     email VARCHAR(100) NOT NULL,
                     phone VARCHAR(100) NOT NULL,
                     adress TEXT NOT NULL)
                     """,
-                params=False,
                 )
         #!!!!!!!!!!!!!Users_tables!!!!!!!!!!!!
 
@@ -125,14 +117,12 @@ class DatabaseInventory:
                        created_at TIMESTAMP,
                        last_login TIMESTAMP)
                        """,
-            params=False,
             )
             self.execute(
                 """CREATE TABLE IF NOT EXISTS Roles(
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
                     description TEXT NOT NULL)""",
-            params=False,
             )
 
         
@@ -142,7 +132,7 @@ class DatabaseInventory:
             self.execute(
             """CREATE TABLE IF NOT EXISTS orders(
                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                       user_id INTERGER,
+                       user_id TEXT NOT NULL,
                        order_date TIMESTAMP,
                        status TEXT NOT NULL,
                        total_amount INTEGER NOT NULL,
@@ -152,7 +142,6 @@ class DatabaseInventory:
                        update_at TIMESTAMP,
                        FOREIGN KEY (user_id) REFERENCES orders(id))
                        """,
-            params=False,
         )          
             self.execute(
             """CREATE TABLE IF NOT EXISTS orders_items(
@@ -163,17 +152,15 @@ class DatabaseInventory:
                        price_at_purchase INTERGER NOT NULL,
                        FOREIGN KEY (item_id) REFERENCES order_items(id))
                        """,
-            params=False,
         )
             self.execute(
             """CREATE TABLE IF NOT EXISTS orders_status(
                        id INTEGER PRIMARY KEY AUTOINCREMENT,
                        status TEXT NOT NULL)
                        """,
-            params=False
             )
         
-    def add_user(self, username:str, password_hash:str, email:str, has_role:bool, role_id=2):
+    def add_user(self, username:str, password_hash:str, email:str, has_role:bool, role_id=2, user_id=None):
 
         assert role_id is not None and isinstance(role_id, int) and role_id in range(1, 3), "please provide an integer"
 
@@ -184,7 +171,7 @@ class DatabaseInventory:
         last_login = self.time_for_timestemp()
         self.execute("""INSERT INTO Users (username, password_hash, email, has_role, role_id, user_id,
                      created_at, last_login) VALUES (?,?,?,?,?,?,?,?)""", args=
-                     (username, password_hash, email, create_user, has_role, role_id,
+                     (username, password_hash, email,has_role, role_id,create_user,
                                                       create_at, last_login))
 
     def update_user(self, id:str, username = None, password_hash = None, email = None, has_role = None):
@@ -229,9 +216,9 @@ class DatabaseInventory:
     def remove_item(self, id=str):
         self.execute("""DELETE FROM item WHERE id = ?""", args=(id,))
         
-    def add_supplier(self, id=None, name=str, email=str, phone=int, adress=str):
-        id_item = id if id else self.gen_id()
-        self.execute("""INSERT INTO suppliers(name, email, phone, adress, id) VALUES(?,?,?,?,?)""", args=(name, email, phone,adress, id))
+    def add_supplier(self, id=None, name=str, email=str, phone=int, adress=str, id_supplier=None):
+        id_supplier = id if id else self.gen_id()
+        self.execute("""INSERT INTO suppliers(name, email, phone, adress, id, id_supplier) VALUES(?,?,?,?,?,?)""", args=(name, email, phone,adress, id, id_supplier))
     def update_supplier(self, id=int, name=None, email=None, phone=None, adress=None):
         if name is not None:
             self.execute("""UPDATE suppliers SET name = ? WHERE id= ?""", args=(name, id))

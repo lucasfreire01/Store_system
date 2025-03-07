@@ -1,35 +1,35 @@
 import sqlite3
-from base import DatabaseInventory
+from .base import DatabaseInventory
 class Customer:
 
-    def __init__(self, address: str, *args):
+    db = DatabaseInventory()
+    def __init__(self, *args):
 
         super().__init__(*args)
+        db = DatabaseInventory()
+        self.db = DatabaseInventory()
 
-        self.address = address
-        order_history = self.load()
 
+    def load(self,user_id: str):
+        print(user_id)
+        user_table = self.db.execute("""SELECT * FROM Users WHERE user_id = ?""", (user_id,))
+        orders_table = self.db.execute("""SELECT * FROM orders WHERE user_id = ?""", (user_id,))
+        address_table = self.db.execute("""SELECT shipping_address FROM orders WHERE user_id = ?""", (user_id,))
 
-    def load(Self,user_id=str):
-        connect = sqlite3.connect('database.db')
-        user_table = DatabaseInventory.execute("""SELECT * FROM User WHERE user_id = ?""", args=(user_id))
-        orders_table = DatabaseInventory.execute("""SELECT * FROM orders WHERE user_id = ?""", args=(user_id))
-        address_table = DatabaseInventory.execute("""SELECT shipping_address FROM orders WHERE user_id = ?""", args=(user_id))
-
-    def verification(self, name=str, password_hash=str):
-        query = DatabaseInventory.execute("""SELECT * FROM User(name, password_hash) VALUES(?,?)""", args=(name, password_hash))
+    def verification(self, name: str, password_hash: str):
+        query = self.db.execute("""SELECT * FROM Users WHERE username = ? AND password_hash = ? """, args=(name, password_hash))
         if query is None:
-            print('This user not exist')
+            print('These information not match')
 
     def view_order_history(self, user_id:str):
         orders_list = []
-        orders_by_user = DatabaseInventory.execute("""SELECT * FROM orders WHERE user_id = ?""", args=(user_id))
+        orders_by_user = self.db.execute("""SELECT * FROM orders WHERE user_id = ?""", args=(user_id,))
         orders_list.append(orders_by_user)
         return orders_list
 
-
     def place_orders(self, status=bool, user_id=None):
-        status = DatabaseInventory.execute("""SELECT * status WHERE user_id = ?""", args=(user_id))
+        status = self.db.execute("""SELECT status FROM orders WHERE user_id = ?""", args=(user_id))
+        print(status)
         if status == 'Done':
             return True
         else:
