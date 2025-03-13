@@ -84,7 +84,7 @@ class DatabaseInventory:
             self.execute(
                 """CREATE TABLE IF NOT EXISTS inventory(
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    item_id INTEGER,
+                    item_id TEXT NOT NULL,
                     quantity INTEGER NOT NULL,
                     location TEXT NOT NULL,
                     reorder_level INTEGER NOT NULL,
@@ -121,6 +121,7 @@ class DatabaseInventory:
             self.execute(
                 """CREATE TABLE IF NOT EXISTS Roles(
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id TEXT NOT NULL,
                     name TEXT NOT NULL,
                     description TEXT NOT NULL)""",
             )
@@ -160,7 +161,7 @@ class DatabaseInventory:
                        """,
             )
         
-    def add_user(self, username:str, password_hash:str, email:str, has_role:bool, role_id=2, user_id=None):
+    def add_user(self, username:str, password_hash:str, email:str, has_role:bool, role_id=2, user_id=None, description_user=None):
 
         assert role_id is not None and isinstance(role_id, int) and role_id in range(1, 3), "please provide an integer"
 
@@ -173,25 +174,29 @@ class DatabaseInventory:
                      created_at, last_login) VALUES (?,?,?,?,?,?,?,?)""", args=
                      (username, password_hash, email,has_role, role_id,create_user,
                                                       create_at, last_login))
+        self.execute("""INSERT INTO Roles(user_id, name, description) VALUES (?,?,?)""", args=(create_user, username, description_user))
 
-    def update_user(self, id:str, username = None, password_hash = None, email = None, has_role = None):
+    def update_user(self, user_id:str, username = None, password_hash = None, email = None, has_role = None, description = None):
         if username is not None:
-            self.execute("""UPDATE Users SET username = ? WHERE  id = ?""", args=(username, id))
+            self.execute("""UPDATE Users SET username = ? WHERE  id = ?""", args=(username, user_id))
         
         if password_hash is not None:
-            self.execute("""UPDATE Users SET password_hash = ? WHERE  id = ?""", args=(password_hash, id))
+            self.execute("""UPDATE Users SET password_hash = ? WHERE  id = ?""", args=(password_hash, user_id))
         
         if email is not None:
-            self.execute("""UPDATE Users SET email = ? WHERE  id = ?""", args=(email, id))
+            self.execute("""UPDATE Users SET email = ? WHERE  id = ?""", args=(email, user_id))
         
         if has_role is not None:
-            self.execute("""UPDATE Users SET has_role = ? WHERE  id = ?""", args=(has_role, id))
+            self.execute("""UPDATE Users SET has_role = ? WHERE  id = ?""", args=(has_role, user_id))
+        if description is not None:
+            self.execute("""UPDATE Roles set description = ? WHERE user_id = ?""", args=(description, user_id))
     
-    def remove_user(self, id:str):
-        self.execute("""DELETE FROM Users WHERE id = ?""", args=(id,))
+    def remove_user(self, user_id:str):
+        self.execute("""DELETE FROM Users WHERE user_id = ?""", args=(user_id,))
+        self.execute("""DELETE FROM Roles WHERE user_id = ?""", args=(user_id,))
     
-    def add_role(self,id:str=None,name=None, description=None):
-        self.execute("""INSERT INTO Roles (name, description) VALUES(?,?)""", args=(name, description))
+    #def add_role(self,id:str=None,name=None, description=None):
+        #self.execute("""INSERT INTO Roles (name, description) VALUES(?,?)""", args=(name, description))
 
     def add_item(self, id=None, name=str, description=str, category_id=str, sku=int, price=float, supplier_id=None, created_at=None, updated_at=None, supplier_keep=False, supplier_share=None):
         if supplier_keep == True:
