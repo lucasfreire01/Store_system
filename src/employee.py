@@ -16,4 +16,6 @@ class Employee:
     def load_position(self,  user_id: None):
         load_id = self.db.execute("""SELECT description FROM Roles WHERE user_id = ?""", args=(user_id,))
 
-    #def managerInventory(self, )
+    def managerInventory(self):
+        pass
+    #def process_order(self, )

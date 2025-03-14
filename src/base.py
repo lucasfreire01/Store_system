@@ -134,6 +134,7 @@ class DatabaseInventory:
             """CREATE TABLE IF NOT EXISTS orders(
                        id INTEGER PRIMARY KEY AUTOINCREMENT,
                        user_id TEXT NOT NULL,
+                       order_id TEXT NOT NULL,
                        order_date TIMESTAMP,
                        status TEXT NOT NULL,
                        total_amount INTEGER NOT NULL,
@@ -147,6 +148,7 @@ class DatabaseInventory:
             self.execute(
             """CREATE TABLE IF NOT EXISTS orders_items(
                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       order_id TEXTO NOT NULL,
                        order_date TIMESTAMP,
                        item_id INTERGER,
                        quantity INTEGER NOT NULL,
@@ -157,6 +159,7 @@ class DatabaseInventory:
             self.execute(
             """CREATE TABLE IF NOT EXISTS orders_status(
                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       order_id TEXT NOT NULL,
                        status TEXT NOT NULL)
                        """,
             )
@@ -237,14 +240,18 @@ class DatabaseInventory:
     def remove_supplier(self, id=str):
         self.execute("""DELETE FROM suppliers WHERE id = ?""", args=(id,))
     
-    def add_order(self, id=None, user_id = None, order_date=None, status=str, total_amount=int, shipping_address=str, billing_address=str, create_at=None, update_at=None):
+    def add_order(self, id=None, order_id= None, user_id = None, order_date=None, status=str, total_amount=int, shipping_address=str, billing_address=str, create_at=None, update_at=None):
         user_id = user_id if user_id else self.gen_id()
+        order_id = order_id if order_id else self.gen_id()
         order_date = self.time_for_timestemp()
         create_at = self.time_for_timestemp()
         update_at = self.time_for_timestemp()
-        self.execute("""INSERT INTO orders (user_id, order_date, status, total_amount, shipping_address, billing_address,
-                     create_at, update_at) VALUES (?,?,?,?,?,?,?,?)""", args=(user_id, order_date, status, total_amount, shipping_address, billing_address,
+        self.execute("""INSERT INTO orders (order_id,user_id, order_date, status, total_amount, shipping_address, billing_address,
+                     create_at, update_at) VALUES (?,?,?,?,?,?,?,?,?)""", args=(order_id, user_id, order_date, status, total_amount, shipping_address, billing_address,
                                                       create_at, update_at))
+    def add_order_status(self, status='boxing', order_id=None):   
+        order_id = order_id if order_id else self.gen_id()
+        self.execute("""INSERT INTO orders_status(order_id, status) VALUES (?,?)""", args=(order_id, status))
 
     def update_order(self, id:str, user_id = None, status = None, total_amount = None, shipping_address = None, billing_address=None):
         if user_id is not None:
