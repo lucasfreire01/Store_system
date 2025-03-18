@@ -18,4 +18,5 @@ class Employee:
 
     def managerInventory(self):
         pass
-    #def process_order(self, )
+    def process_order(self, order_id=None):
+        load_order = self.db.execute("SELECT * FROM orders_status WHERE order_id = ?", args=(order_id,))

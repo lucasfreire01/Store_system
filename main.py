@@ -16,8 +16,8 @@ def main():
     #db.add_supplier(name='Freire', email='freirelucas011@gmail.com', phone=38999492824, adress='vasco da gama street')
     #db.update_supplier(name="Lucas Gabriel", id=1)
     #db.remove_supplier(id='3')
-    db.add_order(user_id="*v2Cx", status="Done", total_amount=1, shipping_address='Vasco Da Gama st', billing_address='Vasco Da Gama St')
-    db.add_order_status(order_id='Dtj4')
+    #db.add_order(user_id="*v2Cx", status="Done", total_amount=1, shipping_address='Vasco Da Gama st', billing_address='Vasco Da Gama St')
+    #db.add_order_status(order_id='Dtj4')
     #db.update_order(id=3, status='Processing')
     #db.remove_order(id=3)
     #customer = Customer()
@@ -25,9 +25,10 @@ def main():
     #customer.verification(name='lucasfreire', password_hash='10.20.30lucas')
     #customer.view_order_history(user_id='E699o')
     #customer.place_orders(user_id='E699o')
-    #employee = Employee()
-    #employee.get_employee_id(user_id='^.U0Y')
-    #employee.load_position(user_id='^.U0Y')
+    employee = Employee()
+    employee.get_employee_id(user_id='^.U0Y')
+    employee.load_position(user_id='^.U0Y')
+    employee.process_order(order_id='Dtj4')
 
 
 if __name__ == "__main__":
