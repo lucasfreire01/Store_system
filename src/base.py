@@ -201,23 +201,22 @@ class DatabaseInventory:
     #def add_role(self,id:str=None,name=None, description=None):
         #self.execute("""INSERT INTO Roles (name, description) VALUES(?,?)""", args=(name, description))
 
-    def add_item(self, id=None, name=str, description=str, category_id=str, sku=int, price=float, supplier_id=None, created_at=None, updated_at=None, supplier_keep=False, supplier_share=None):
+    def add_item(self, id=None, name=str, description=str, category_id=str, sku=None, price=float, supplier_id=None, created_at=None, updated_at=None, supplier_keep=False, supplier_share=None):
         if supplier_keep == True:
             supplier = self.execute("""SELECT id FROM suppliers WHERE id = ?""", args=(supplier_share,))
             supplier_id = supplier
         created_at_item = self.time_for_timestemp()
         updated_at_item = self.time_for_timestemp()
+        sku = sku if sku else self.gen_id()
         id_item = id if id else self.gen_id()
         supplier_id_item = supplier_id if supplier_id else self.gen_id()
         self.execute("""INSERT INTO item(name, description, sku, price, id, category_id, supplier_id, create_at, updated_at) VALUES(?,?,?,?,?,?,?,?,?)""", args=(name, description, sku,price,
                                                                                                                                       id, category_id, supplier_id_item, created_at_item, updated_at_item))
-    def update_item(self, name=str, description=None, sku=None, price=None, id=None):
+    def update_item(self, name=str, description=None, price=None, id=None):
         if name is not None:
             self.execute("""UPDATE item SET name = ? WHERE id= ?""", args=(name, id))
         if description is not None:
             self.execute("""UPDATE item SET description = ? WHERE id= ?""", args=(description, id))
-        if sku is not None:
-            self.execute("""UPDATE item SET sku = ? WHERE id= ?""", args=(sku, id))
         if price is not None:
             self.execute("""UPDATE item SET price = ? WHERE id= ?""", args=(price, id))
 

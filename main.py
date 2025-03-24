@@ -10,7 +10,7 @@ def main():
     db.add_user('lucas', 'lucas123', 'freirelucas011@gmail.com', False, description_user='Maneger')
     #db.remove_user(user_id='CbMV-')
     #db.update_user(description='supplier', user_id='CbMV-')
-    db.add_item(name='Air Max One', category_id='Shoods',description='the first shood', sku=10, price=100.99)
+    db.add_item(name='Air Max One', category_id='Shoods',description='the first shood', price=100.99)
     #db.update_item(name='Shoods', price=90.99, id=5)
     #db.remove_item(id=5)
     #db.add_supplier(name='Freire', email='freirelucas011@gmail.com', phone=38999492824, adress='vasco da gama street')
